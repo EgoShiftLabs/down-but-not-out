@@ -9,7 +9,18 @@ for (const dialog of document.querySelectorAll('dialog')) {
 }
 document.querySelectorAll('[data-open-profile]').forEach((button) => button.addEventListener('click', () => openDialog($('profile-dialog'))));
 $('campaign-open').addEventListener('click', () => openDialog($('image-dialog')));
-$('reading-toggle').addEventListener('click', (event) => { const enabled = document.body.classList.toggle('large-text'); event.currentTarget.setAttribute('aria-pressed', String(enabled)); });
+// Only display preferences are saved locally. Profile contents remain ephemeral.
+const preferenceKey = 'dbno-display-v1';
+function persistDisplayChoices() {
+  try { localStorage.setItem(preferenceKey, JSON.stringify({ large: document.body.classList.contains('large-text'), contrast: document.body.classList.contains('high-contrast') })); } catch (_) {}
+}
+try {
+  const pref = JSON.parse(localStorage.getItem(preferenceKey) || '{}');
+  if (pref.large === true) { document.body.classList.add('large-text'); $('reading-toggle').setAttribute('aria-pressed', 'true'); }
+  if (pref.contrast === true) { document.body.classList.add('high-contrast'); $('contrast-toggle').setAttribute('aria-pressed', 'true'); }
+} catch (_) {}
+$('reading-toggle').addEventListener('click', (event) => { const enabled = document.body.classList.toggle('large-text'); event.currentTarget.setAttribute('aria-pressed', String(enabled)); persistDisplayChoices(); });
+$('contrast-toggle').addEventListener('click', (event) => { const enabled = document.body.classList.toggle('high-contrast'); event.currentTarget.setAttribute('aria-pressed', String(enabled)); persistDisplayChoices(); });
 const openers = [
 'Be honest: are we sharing fries, or should I order my own?',
 'You get the aux cord on our first drive. What song are you playing?',
@@ -45,3 +56,39 @@ function updatePreview() {
 }
 $('profile-form').addEventListener('submit', (event) => { event.preventDefault(); updatePreview(); $('preview-status').textContent = 'Preview updated. Nothing has been posted or saved.'; document.querySelector('.studio-preview').scrollIntoView({ behavior: 'instant', block: 'nearest' }); });
 $('profile-form').addEventListener('reset', (event) => { event.preventDefault(); $('nickname').value = ''; $('bio').value = ''; $('connection').selectedIndex = 0; interestButtons.forEach((b) => b.setAttribute('aria-pressed', 'false')); $('interest-status').textContent = ''; updatePreview(); $('preview-status').textContent = 'Preview reset. Nothing has been posted or saved.'; });
+
+function chooseInterest(name) {
+  const b = interestButtons.find((button) => button.textContent === name);
+  if (b) b.setAttribute('aria-pressed', 'true');
+}
+$('example-profile').addEventListener('click', () => {
+  $('nickname').value = 'Riley';
+  $('bio').value = 'I love a great playlist, exploring new places, and terrible jokes.';
+  $('connection').value = 'I like time to reply.';
+  interestButtons.forEach((b) => b.setAttribute('aria-pressed', 'false'));
+  ['Music', 'Travel', 'Good food'].forEach(chooseInterest);
+  updatePreview();
+  $('preview-status').textContent = 'Fictional example loaded. Not a real member or public profile.';
+});
+$('copy-profile').addEventListener('click', async () => {
+  updatePreview();
+  const name = $('nickname').value.trim() || 'Hello, you';
+  const interests = interestButtons.filter((b) => b.getAttribute('aria-pressed') === 'true').map((b) => b.textContent).join(', ') || 'Not selected';
+  const summary = ['Down But Not Out — fictional profile concept', 'Nickname: ' + name, 'About: ' + ($('bio').value.trim() || 'Not provided'), 'Interests: ' + interests, 'Communication: ' + $('connection').value, 'Preview only — no real member account'].join('\n');
+  try {
+    if (!navigator.clipboard?.writeText) throw new Error('Clipboard unavailable');
+    await navigator.clipboard.writeText(summary);
+    $('preview-status').textContent = 'Preview copied to your clipboard. Only share it if you choose to.';
+  } catch (_) {
+    $('preview-status').textContent = 'Copy unavailable in this browser. You can still read the preview here.';
+  }
+});
+$('copy-site-link').addEventListener('click', async () => {
+  try {
+    if (!navigator.clipboard?.writeText) throw new Error('Clipboard unavailable');
+    await navigator.clipboard.writeText('https://egoshiftlabs.github.io/down-but-not-out/');
+    $('share-feedback').textContent = 'Website link copied.';
+  } catch (_) {
+    $('share-feedback').textContent = 'Copy unavailable. Website: egoshiftlabs.github.io/down-but-not-out/';
+  }
+});
