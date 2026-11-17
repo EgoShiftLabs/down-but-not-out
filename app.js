@@ -9,7 +9,7 @@ for (const dialog of document.querySelectorAll('dialog')) {
 }
 document.querySelectorAll('[data-open-profile]').forEach((button) => button.addEventListener('click', () => openDialog($('profile-dialog'))));
 $('campaign-open').addEventListener('click', () => openDialog($('image-dialog')));
-// Only display preferences are saved locally. Profile contents remain ephemeral.
+// Display preferences are saved locally; the fictional profile preview is saved only with explicit opt-in.
 const preferenceKey = 'dbno-display-v1';
 function persistDisplayChoices() {
   try { localStorage.setItem(preferenceKey, JSON.stringify({ large: document.body.classList.contains('large-text'), contrast: document.body.classList.contains('high-contrast') })); } catch (_) {}
@@ -54,13 +54,79 @@ function updatePreview() {
  const interests = interestButtons.filter((b) => b.getAttribute('aria-pressed') === 'true').map((b) => b.textContent);
  $('preview-interests').replaceChildren(...(interests.length ? interests : ['Your interests']).map((text) => { const tag = document.createElement('span'); tag.textContent = text; return tag; }));
 }
-$('profile-form').addEventListener('submit', (event) => { event.preventDefault(); updatePreview(); $('preview-status').textContent = 'Preview updated. Nothing has been posted or saved.'; document.querySelector('.studio-preview').scrollIntoView({ behavior: 'instant', block: 'nearest' }); });
-$('profile-form').addEventListener('reset', (event) => { event.preventDefault(); $('nickname').value = ''; $('bio').value = ''; $('connection').selectedIndex = 0; interestButtons.forEach((b) => b.setAttribute('aria-pressed', 'false')); $('interest-status').textContent = ''; updatePreview(); $('preview-status').textContent = 'Preview reset. Nothing has been posted or saved.'; });
+$('profile-form').addEventListener('submit', (event) => { event.preventDefault(); updatePreview(); refreshSavedPreview(); $('preview-status').textContent = $('remember-preview').checked ? 'Preview updated and saved on this device only. Not a public profile.' : 'Preview updated. Nothing posted or saved.'; document.querySelector('.studio-preview').scrollIntoView({ behavior: 'instant', block: 'nearest' }); });
+$('profile-form').addEventListener('reset', (event) => { event.preventDefault(); $('remember-preview').checked = false; forgetPreview(); $('nickname').value = ''; $('bio').value = ''; $('connection').selectedIndex = 0; interestButtons.forEach((b) => b.setAttribute('aria-pressed', 'false')); $('interest-status').textContent = ''; updatePreview(); $('storage-status').textContent = 'Reset complete. Any saved preview has been cleared from this device.'; $('preview-status').textContent = 'Preview reset. Nothing posted or saved.'; });
 
 function chooseInterest(name) {
   const b = interestButtons.find((button) => button.textContent === name);
   if (b) b.setAttribute('aria-pressed', 'true');
 }
+/* Optional local-only preview. No network requests or sensitive-data collection.
+   A user must explicitly enable saving, and can clear it at any time. */
+const previewStorageKey = 'dbno-optional-preview-v1';
+function collectPreview() {
+  return {
+    nickname: $('nickname').value.slice(0, 24),
+    bio: $('bio').value.slice(0, 140),
+    connection: $('connection').value,
+    interests: interestButtons.filter((b) => b.getAttribute('aria-pressed') === 'true').map((b) => b.textContent)
+  };
+}
+function forgetPreview() {
+  try { localStorage.removeItem(previewStorageKey); return true; } catch (_) { return false; }
+}
+function storePreview() {
+  if (!$('remember-preview').checked) return false;
+  try {
+    localStorage.setItem(previewStorageKey, JSON.stringify(collectPreview()));
+    $('storage-status').textContent = 'Saved on this device only. Turn this off or press Reset to clear it.';
+    return true;
+  } catch (_) {
+    $('remember-preview').checked = false;
+    $('storage-status').textContent = 'This browser cannot save previews. Your preview will remain temporary.';
+    return false;
+  }
+}
+$('remember-preview').addEventListener('change', () => {
+  if ($('remember-preview').checked) {
+    storePreview();
+  } else {
+    const cleared = forgetPreview();
+    $('storage-status').textContent = cleared ? 'Saved preview cleared from this device.' : 'Browser storage is unavailable. No new preview will be saved.';
+  }
+});
+function refreshSavedPreview() {
+  if ($('remember-preview').checked) storePreview();
+}
+$('profile-form').addEventListener('input', (event) => {
+  if (event.target.id !== 'remember-preview') refreshSavedPreview();
+});
+$('profile-form').addEventListener('change', (event) => {
+  if (event.target.id !== 'remember-preview') refreshSavedPreview();
+});
+interestButtons.forEach((button) => button.addEventListener('click', refreshSavedPreview));
+try {
+  const raw = localStorage.getItem(previewStorageKey);
+  if (raw) {
+    const saved = JSON.parse(raw);
+    if (saved && typeof saved === 'object') {
+      $('nickname').value = typeof saved.nickname === 'string' ? saved.nickname.slice(0,24) : '';
+      $('bio').value = typeof saved.bio === 'string' ? saved.bio.slice(0,140) : '';
+      if (typeof saved.connection === 'string' && [...$('connection').options].some(o=>o.value===saved.connection)) $('connection').value = saved.connection;
+      interestButtons.forEach(b => b.setAttribute('aria-pressed', 'false'));
+      if (Array.isArray(saved.interests)) {
+        saved.interests.filter(x=>typeof x==='string').slice(0,3).forEach(chooseInterest);
+      }
+      $('remember-preview').checked = true;
+      updatePreview();
+      $('storage-status').textContent = 'Your device-only preview was restored. Use Reset or turn off saving to remove it.';
+      $('preview-status').textContent = 'Your previous local preview has been restored. Not a public member profile.';
+    }
+  }
+} catch (_) {
+  $('storage-status').textContent = 'Browser storage unavailable. Your preview remains temporary.';
+}
+
 $('example-profile').addEventListener('click', () => {
   $('nickname').value = 'Riley';
   $('bio').value = 'I love a great playlist, exploring new places, and terrible jokes.';
@@ -68,6 +134,7 @@ $('example-profile').addEventListener('click', () => {
   interestButtons.forEach((b) => b.setAttribute('aria-pressed', 'false'));
   ['Music', 'Travel', 'Good food'].forEach(chooseInterest);
   updatePreview();
+  refreshSavedPreview();
   $('preview-status').textContent = 'Fictional example loaded. Not a real member or public profile.';
 });
 $('copy-profile').addEventListener('click', async () => {
@@ -90,5 +157,15 @@ $('copy-site-link').addEventListener('click', async () => {
     $('share-feedback').textContent = 'Website link copied.';
   } catch (_) {
     $('share-feedback').textContent = 'Copy unavailable. Website: egoshiftlabs.github.io/down-but-not-out/';
+  }
+});
+$('copy-share-message').addEventListener('click', async () => {
+  const msg = 'Check out Down But Not Out — an inclusive dating platform in development for adults 18+ with and without disabilities. Different abilities. Same butterflies. ❤️ https://egoshiftlabs.github.io/down-but-not-out/';
+  try {
+    if (!navigator.clipboard?.writeText) throw new Error('Clipboard unavailable');
+    await navigator.clipboard.writeText(msg);
+    $('share-feedback').textContent = 'Short share message copied! Paste it wherever you like.';
+  } catch (_) {
+    $('share-feedback').textContent = 'Copy unavailable in this browser. You can still share the website URL.';
   }
 });
