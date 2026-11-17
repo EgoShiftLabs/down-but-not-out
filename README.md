@@ -51,3 +51,12 @@ This GitHub Pages site has no user-data backend. A real automated waitlist would
 - No personal profile details are encoded into URLs or automatically submitted.
 - Short share-message copy and clear success status. A prefilled community-feedback email offers optional ideas while warning against disclosing sensitive information.
 - Accessibility display preferences were already persistent; no duplicate systems were added.
+
+## QA polish after external review (November 2026)
+
+- Verified that the roadmap already displayed a last-updated month and that optional device-only storage already warned against shared devices.
+- Made the hero's primary action explicitly describe the interactive preview (not real dating or matchmaking).
+- Added a visible updated-month note alongside the preview disclaimer.
+- Fixed encoded community-feedback email newlines to use actual `%0A` breaks rather than literal `\\n` text.
+- Strengthened visual and screen-reader status feedback around the Profile Studio and added the Twitter/X image metadata.
+- All HTML/CSS changes are static. Real keyboard navigation, screen reader behavior, touch targets, and browser-storage workflows still require interactive browser and assistive-technology testing.
