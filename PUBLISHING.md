@@ -1,18 +1,22 @@
-# Publish with GitHub Pages
+# Publishing and verification
 
-1. Open https://github.com/EgoShiftLabs/down-but-not-out/settings/pages
-2. Under Build and deployment, choose **Deploy from a branch**.
-3. Choose **main** and **/ (root)**, then save.
-4. Wait for GitHub's Pages build to finish. The expected site address is https://egoshiftlabs.github.io/down-but-not-out/
+GitHub Pages is configured to serve the repository root on `main`:
+https://egoshiftlabs.github.io/down-but-not-out/
 
-## Current scope
+Settings: https://github.com/EgoShiftLabs/down-but-not-out/settings/pages
 
-A responsive, static coming-soon landing page in `index.html`, with brand introduction, a working conversation-starter button, and expandable questions. It has no external dependencies, signup forms, analytics, real profiles, matching, or messaging. The promotional portrait is not embedded in this version; the hero uses an original inline heart illustration.
+The site has no build step. Publish `index.html`, `styles.css`, `app.js`, and `assets/` together. The campaign model is fictional and labeled as such.
 
-## Verification
+## Release checks
 
-Source can be reviewed directly on GitHub. After enabling Pages, check the published page on mobile and desktop, keyboard navigation, FAQ controls, and the conversation-starter button. Browser rendering was not tested during initial creation because a browser/runtime was unavailable.
+- JavaScript syntax (`node --check app.js`).
+- All internal links, local image/script/style assets, and ID references resolve.
+- Profile studio opens, updates, limits interests to three, resets, and closes with Escape.
+- User-entered text is rendered as text, never HTML.
+- Date categories and conversation starters update; FAQs expand.
+- Campaign image loads and opens full-size.
+- Check desktop and narrow layouts, keyboard focus, and larger-text mode.
 
-## Future member experience
+## Product limits
 
-Accounts, age and identity checks, consent-centered onboarding, privacy and data controls, reporting and blocking, moderation, and accessible communication require separate implementation before accepting members. Never use this public repository to store member data or secrets.
+This is a public prelaunch experience. The studio is a private in-memory demonstration, not an account. No profile data is submitted or persisted. A refresh clears it. No waitlist, member service, or email notification functionality exists yet.
