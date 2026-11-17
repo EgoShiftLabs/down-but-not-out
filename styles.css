@@ -82,3 +82,20 @@ body.high-contrast .roadmap-state{border-color:currentColor}
 body.high-contrast .micro,body.high-contrast .preview-status{color:#382830}
 @media(max-width:1050px){.roadmap-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.community-layout{gap:36px}.community-share{grid-template-columns:1fr}.community-share .button{justify-self:start}}
 @media(max-width:760px){.roadmap-section,.community-section{padding:62px 0}.roadmap-grid{gap:12px}.roadmap-item{padding:18px}.roadmap-item h3{margin-top:23px;font-size:17px}.roadmap-state{font-size:8px}.community-layout{grid-template-columns:1fr;gap:23px}.community-intro h2{font-size:41px}.community-intro>p{font-size:14px}.community-intro .community-lead{font-size:18px}.community-actions{grid-template-columns:1fr}.community-share{grid-column:auto}.community-action{padding:23px}.footer-links{flex-wrap:wrap}.header-actions{gap:8px}.header-actions .text-button{font-size:12px}}
+
+/* Opt-in device-only preview saving and simplified sharing */
+.preview-storage{margin:8px 0 18px;padding:14px;border:1px solid #d6c6cc;background:#fff;border-radius:12px}
+.preview-storage-toggle{display:flex!important;align-items:flex-start;gap:12px;cursor:pointer;margin:0 0 7px!important}
+.preview-storage-toggle input{width:19px!important;height:19px;min-width:19px;padding:0;margin:2px 0 0!important;accent-color:#a80e42}
+.preview-storage-toggle span{display:block;flex:1}
+.preview-storage-toggle strong{display:block;font-size:13px;color:var(--ink)}
+.preview-storage-toggle small{display:block;font-size:11px;font-weight:400;color:var(--muted);line-height:1.6;margin-top:3px}
+.preview-storage .micro{margin:0 0 0 31px}
+.community-examples{font-size:13px!important;padding:14px 18px;background:#fff9f9;border-left:3px solid var(--coral)}
+.community-examples strong{color:var(--ink)}
+.community-share-buttons{display:flex;gap:10px;flex-wrap:wrap;justify-content:flex-end}
+.community-share-buttons .preview-copy{background:transparent;border-color:#aa939e;color:var(--ink)}
+.community-share-buttons .preview-copy:hover{background:#f7e9ec}
+@media(max-width:1050px){.community-share-buttons{justify-content:flex-start}}
+@media(max-width:760px){.community-share-buttons{width:100%}.community-share-buttons .button{flex:1 1 auto}}
+body.high-contrast .preview-storage{border:2px solid var(--ink)}
