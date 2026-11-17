@@ -8,11 +8,11 @@ Live introduction: https://egoshiftlabs.github.io/down-but-not-out/
 
 - Responsive premium campaign-led landing page, including the original AI-generated promotional image.
 - Accessible native dialogs for the full campaign and interactive profile studio.
-- Nickname, up to three interests, communication preference, and conversation-starter preview. Inputs stay in memory; no persistence or server submission.
+- Nickname, up to three interests, communication preference, and conversation-starter preview. Inputs are not submitted to a server. They stay ephemeral by default, with an explicit opt-in for device-only browser storage; Reset or unchecking removes the saved preview.
 - Three date-inspiration categories, seven conversation starters, larger-text and high-contrast controls (only display preferences stored locally), and expandable FAQs.
 - Public development roadmap, community participation/contact via `mailto:`, social sharing link copy, and fictional example-profile generator.
 - Explicit manual request for launch email updates through the visitor’s email app; there is no automatic mailing list or backend form.
-- A copyable fictional profile summary; profile inputs remain in memory and are never uploaded or stored by the site.
+- A copyable fictional profile summary and short general share message. Profile inputs are never uploaded by the site; optional local storage happens only with the visitor's opt-in.
 - Explicit prelaunch status. No real member profiles, registration, matching, messaging, mailing-list backend, or claims of existing moderation.
 
 ## Files
@@ -44,3 +44,10 @@ Email: egoshiftlabs@gmail.com. Public `mailto:` links open the visitor’s email
 - Added social card metadata and a share-link button.
 
 This GitHub Pages site has no user-data backend. A real automated waitlist would require an approved email/form provider, privacy practices and abuse prevention. A real dating platform needs a secure backend, moderation and consent-centered safety design.
+
+## Latest static UX improvements
+
+- Optional, off-by-default localStorage for the fictional Profile Studio, with shared-device warning, auto-save while opted in, and clear on disable or Reset.
+- No personal profile details are encoded into URLs or automatically submitted.
+- Short share-message copy and clear success status. A prefilled community-feedback email offers optional ideas while warning against disclosing sensitive information.
+- Accessibility display preferences were already persistent; no duplicate systems were added.
