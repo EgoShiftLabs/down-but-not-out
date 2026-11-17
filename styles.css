@@ -99,3 +99,26 @@ body.high-contrast .micro,body.high-contrast .preview-status{color:#382830}
 @media(max-width:1050px){.community-share-buttons{justify-content:flex-start}}
 @media(max-width:760px){.community-share-buttons{width:100%}.community-share-buttons .button{flex:1 1 auto}}
 body.high-contrast .preview-storage{border:2px solid var(--ink)}
+
+/* Readable, calm feedback in the fictional profile preview */
+.studio-preview .preview-status{
+  min-height:2.8em;
+  margin-top:21px;
+  padding:10px 14px;
+  border:1px solid #cab6bd;
+  border-radius:10px;
+  font-size:12px;
+  font-weight:600;
+  line-height:1.55;
+  color:#341426;
+  background:#fff9f7;
+}
+.hero-footnote p span{line-height:1.55}
+body.high-contrast .studio-preview .preview-status{
+  color:var(--ink);
+  border:2px solid var(--ink);
+  background:#fff;
+}
+@media(max-width:760px){
+  .studio-preview .preview-status{font-size:13px;max-width:100%}
+}
